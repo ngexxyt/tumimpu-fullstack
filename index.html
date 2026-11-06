@@ -1,0 +1,1590 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0F766E">
+<title>Tumimpu - Ojek Online Kotamobagu</title>
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<style>
+:root{--teal:#0F766E;--teal-dark:#134E4A;--amber:#F59E0B;--bg:#F9FAFB;--surface:#FFF;--text:#1E293B;--muted:#64748B;--border:#E2E8F0;--success:#10B981;--danger:#EF4444;--radius:16px}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+.screen{display:none;min-height:100vh;position:relative}
+.screen.active{display:block}
+.hidden{display:none!important}
+
+/* Splash */
+#splash{background:linear-gradient(160deg,var(--teal),var(--teal-dark));color:#fff;text-align:center;padding:60px 24px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh}
+.logo{width:100px;height:100px;background:#fff;border-radius:28px;display:flex;align-items:center;justify-content:center;font-size:52px;margin-bottom:24px;box-shadow:0 20px 40px rgba(0,0,0,.2)}
+.splash-title{font-size:40px;font-weight:800;letter-spacing:-1px;margin-bottom:8px}
+.splash-tag{font-size:14px;opacity:.85;font-style:italic;margin-bottom:48px}
+
+/* Buttons */
+.btn{background:var(--amber);color:var(--text);border:none;padding:16px 32px;border-radius:16px;font-size:16px;font-weight:700;cursor:pointer;box-shadow:0 8px 20px rgba(245,158,11,.4);min-height:52px;font-family:inherit}
+.btn:active{transform:scale(.97)}
+.btn-teal{background:var(--teal);color:#fff;box-shadow:0 8px 20px rgba(15,118,110,.35)}
+.btn-outline{background:transparent;color:var(--muted);border:1.5px solid var(--border);box-shadow:none}
+.btn-block{width:100%;display:block}
+.btn-danger{background:var(--danger);color:#fff}
+
+/* Login */
+#login{padding:40px 24px;background:#fff;min-height:100vh}
+.login-logo{width:80px;height:80px;background:var(--teal);border-radius:24px;margin:40px auto 24px;display:flex;align-items:center;justify-content:center;font-size:40px}
+.login-title{font-size:24px;font-weight:700;text-align:center;margin-bottom:8px}
+.login-sub{font-size:14px;color:var(--muted);text-align:center;margin-bottom:40px}
+.input-group{margin-bottom:16px}
+.input-label{font-size:13px;font-weight:600;color:var(--muted);margin-bottom:6px;display:block}
+.input{width:100%;padding:14px 16px;border:1.5px solid var(--border);border-radius:12px;font-size:15px;font-family:inherit;background:#fff}
+.input:focus{outline:none;border-color:var(--teal)}
+.otp-inputs{display:flex;gap:8px;justify-content:center;margin:24px 0}
+.otp-input{width:48px;height:56px;text-align:center;font-size:22px;font-weight:700;border:1.5px solid var(--border);border-radius:12px}
+.otp-input:focus{outline:none;border-color:var(--teal)}
+
+/* Header */
+.header{background:linear-gradient(160deg,var(--teal),var(--teal-dark));padding:56px 20px 28px;color:#fff;border-radius:0 0 28px 28px;position:relative;overflow:hidden}
+.header::after{content:'';position:absolute;right:-40px;top:-40px;width:180px;height:180px;background:radial-gradient(circle,rgba(245,158,11,.25),transparent 70%);border-radius:50%}
+.greeting{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;position:relative;z-index:2}
+.greeting-hi{font-size:13px;opacity:.85}
+.greeting-name{font-size:18px;font-weight:700;margin-top:2px}
+.avatar{width:44px;height:44px;background:var(--amber);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;border:2px solid rgba(255,255,255,.3);cursor:pointer}
+.driver-toggle{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:6px 12px;font-size:11px;font-weight:700;color:#fff;cursor:pointer;margin-top:8px;display:inline-flex;align-items:center;gap:6px}
+.driver-toggle.active{background:var(--amber);color:var(--text)}
+.wallet-card{background:rgba(255,255,255,.12);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:16px;display:flex;justify-content:space-between;align-items:center;position:relative;z-index:2}
+.wallet-label{font-size:12px;opacity:.8}
+.wallet-balance{font-size:22px;font-weight:800;margin-top:2px;font-family:-apple-system,monospace}
+.topup-btn{background:var(--amber);color:var(--text);border:none;padding:10px 16px;border-radius:12px;font-weight:700;font-size:13px;cursor:pointer;min-height:44px}
+
+/* Content */
+.content{padding:20px}
+.search-label{font-size:13px;font-weight:600;color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px}
+.search-box{background:#fff;border-radius:16px;padding:14px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 4px 12px rgba(0,0,0,.08);cursor:pointer;border:1px solid var(--border);margin-bottom:20px}
+.search-box:active{transform:scale(.98)}
+.search-icon{font-size:20px}
+.search-main{font-size:15px;font-weight:600}
+.search-sub{font-size:12px;color:var(--muted);margin-top:2px}
+
+/* Services Grid */
+.services-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.service-item{background:#fff;border-radius:16px;padding:14px 8px;text-align:center;cursor:pointer;border:1px solid var(--border);min-height:96px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
+.service-item:active{transform:scale(.95);border-color:var(--teal)}
+.service-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px}
+.service-name{font-size:11px;font-weight:600;color:#334155;line-height:1.2}
+
+/* Promo */
+.promo-banner{background:linear-gradient(135deg,var(--amber),#D97706);border-radius:20px;padding:18px 20px;color:var(--text);margin-bottom:20px;position:relative;overflow:hidden;cursor:pointer}
+.promo-banner::before{content:'';position:absolute;right:-20px;top:-20px;width:120px;height:120px;background:rgba(255,255,255,.15);border-radius:50%}
+.promo-badge{display:inline-block;background:var(--text);color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;margin-bottom:8px;letter-spacing:.5px}
+.promo-title{font-size:16px;font-weight:800;margin-bottom:4px;position:relative}
+.promo-desc{font-size:12px;opacity:.85;position:relative}
+
+/* Fairness Card */
+.fairness-card{background:linear-gradient(135deg,var(--teal),#115E59);border-radius:20px;padding:18px 20px;color:#fff;display:flex;align-items:center;gap:14px;margin-bottom:20px}
+.fairness-icon{width:48px;height:48px;background:rgba(255,255,255,.15);border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:24px}
+.fairness-t1{font-size:14px;font-weight:700;margin-bottom:2px}
+.fairness-t2{font-size:12px;opacity:.85;line-height:1.4}
+
+/* Bottom Nav */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;height:72px;background:#fff;border-top:1px solid var(--border);display:flex;justify-content:space-around;align-items:center;padding:0 8px 12px;z-index:50}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px;border:none;background:transparent;cursor:pointer;color:var(--muted);min-height:56px;font-family:inherit}
+.nav-item.active{color:var(--teal)}
+.nav-icon{font-size:22px}
+.nav-label{font-size:10px;font-weight:600}
+
+/* App Bar */
+.app-bar{height:56px;padding:0 16px;display:flex;align-items:center;gap:12px;background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10;margin-top:0}
+.icon-btn{width:44px;height:44px;border-radius:12px;border:none;background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:20px}
+.icon-btn:active{background:#F1F5F9}
+.app-bar-title{font-size:17px;font-weight:700;flex:1}
+
+/* Location List */
+.loc-group-title{padding:16px 20px 8px;font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.loc-item{padding:14px 20px;display:flex;align-items:center;gap:14px;cursor:pointer;border-bottom:1px solid var(--border);min-height:64px}
+.loc-item:active{background:#F8FAFC}
+.loc-icon{width:40px;height:40px;border-radius:12px;background:#F0FDFA;color:var(--teal);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px}
+.loc-icon.dest{background:#FFFBEB;color:var(--amber)}
+.loc-name{font-size:14px;font-weight:600;margin-bottom:2px}
+.loc-addr{font-size:12px;color:var(--muted)}
+
+/* Map Area */
+.map-area{height:280px;background:linear-gradient(180deg,#E8F5F0,#D1E8DF);position:relative;overflow:hidden}
+.map-area::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(15,118,110,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(15,118,110,.08) 1px,transparent 1px);background-size:40px 40px}
+.map-info{position:absolute;top:12px;left:12px;right:12px;background:rgba(255,255,255,.95);backdrop-filter:blur(10px);border-radius:12px;padding:10px 14px;display:flex;align-items:center;gap:10px;box-shadow:0 4px 12px rgba(0,0,0,.08);font-size:12px;font-weight:600}
+.pulse-dot{width:8px;height:8px;border-radius:50%;background:var(--success);animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+/* Booking Sheet */
+.booking-sheet{background:#fff;border-radius:28px 28px 0 0;margin-top:-24px;position:relative;z-index:5;padding:16px 20px 24px;box-shadow:0 -8px 24px rgba(0,0,0,.06)}
+.sheet-handle{width:40px;height:4px;background:#E2E8F0;border-radius:2px;margin:0 auto 16px}
+
+.route-summary{background:#F8FAFC;border-radius:16px;padding:14px;margin-bottom:16px;display:flex;gap:12px}
+.route-dots{display:flex;flex-direction:column;align-items:center;padding:4px 0;width:20px}
+.route-dots .d1{width:10px;height:10px;border-radius:50%;background:var(--teal)}
+.route-dots .line{flex:1;width:2px;background:#CBD5E1;margin:4px 0}
+.route-dots .d2{width:10px;height:10px;background:var(--amber);border-radius:2px}
+.route-info{flex:1;display:flex;flex-direction:column;justify-content:space-between;gap:10px}
+.route-label{font-size:10px;color:var(--muted);text-transform:uppercase;font-weight:700;letter-spacing:.5px}
+.route-name{font-size:13px;font-weight:600;margin-top:2px}
+.route-meta{display:flex;gap:12px;padding-top:10px;border-top:1px dashed #E2E8F0;font-size:11px;color:var(--muted);font-weight:600}
+
+/* Service Selector */
+.service-selector{display:flex;gap:8px;margin-bottom:16px;overflow-x:auto;padding-bottom:4px}
+.service-selector::-webkit-scrollbar{display:none}
+.service-chip{flex-shrink:0;padding:10px 14px;border-radius:12px;background:#F8FAFC;border:1.5px solid var(--border);font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:6px;min-height:44px;font-family:inherit}
+.service-chip.active{background:#F0FDFA;border-color:var(--teal);color:var(--teal)}
+
+/* Fare Card */
+.fare-card{background:linear-gradient(160deg,var(--teal),var(--teal-dark));border-radius:20px;padding:18px;color:#fff;margin-bottom:16px;position:relative;overflow:hidden}
+.fare-card::before{content:'';position:absolute;right:-30px;top:-30px;width:120px;height:120px;background:radial-gradient(circle,rgba(245,158,11,.2),transparent 70%);border-radius:50%}
+.fare-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;position:relative}
+.fare-label{font-size:12px;opacity:.85;margin-bottom:4px}
+.fare-total{font-size:28px;font-weight:800;font-family:-apple-system,monospace;letter-spacing:-.5px}
+.fairness-badge{background:var(--amber);color:var(--text);padding:6px 10px;border-radius:10px;font-size:10px;font-weight:800;display:flex;align-items:center;gap:4px}
+.fare-breakdown{background:rgba(255,255,255,.1);border-radius:14px;padding:12px 14px;position:relative}
+.breakdown-row{display:flex;justify-content:space-between;padding:6px 0;font-size:12px}
+.breakdown-row .label{opacity:.85;display:flex;align-items:center;gap:6px}
+.breakdown-divider{height:1px;background:rgba(255,255,255,.15);margin:6px 0}
+.breakdown-row.driver{padding-top:10px;font-size:14px}
+.breakdown-row.driver .label{font-weight:700;opacity:1}
+.breakdown-row.driver .value{color:#FBBF24;font-weight:800;font-size:16px}
+.commission-val{color:#FCA5A5}
+
+/* Payment Row */
+.payment-row{background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:12px;margin-bottom:16px;cursor:pointer;min-height:56px}
+.payment-icon{width:36px;height:36px;border-radius:10px;background:#F0FDFA;color:var(--teal);display:flex;align-items:center;justify-content:center;font-size:18px}
+.payment-info{flex:1}
+.payment-t1{font-size:13px;font-weight:700}
+.payment-t2{font-size:11px;color:var(--muted);margin-top:1px}
+
+/* Searching */
+#searching{background:#fff;align-items:center;justify-content:center;padding:40px 32px;text-align:center;min-height:100vh;display:none;flex-direction:column}
+#searching.active{display:flex}
+.radar{width:200px;height:200px;position:relative;margin-bottom:32px}
+.radar-ring{position:absolute;border-radius:50%;border:2px solid var(--teal);top:50%;left:50%;transform:translate(-50%,-50%);opacity:0;animation:radar 2.5s infinite}
+.radar-ring.r1{width:80px;height:80px;animation-delay:0s}
+.radar-ring.r2{width:140px;height:140px;animation-delay:.8s}
+.radar-ring.r3{width:200px;height:200px;animation-delay:1.6s}
+@keyframes radar{0%{opacity:0;transform:translate(-50%,-50%) scale(.5)}30%{opacity:.6}100%{opacity:0;transform:translate(-50%,-50%) scale(1.2)}}
+.radar-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:72px;height:72px;background:linear-gradient(135deg,var(--teal),var(--teal-dark));border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 30px rgba(15,118,110,.4);font-size:32px}
+.searching-title{font-size:20px;font-weight:800;margin-bottom:8px}
+.searching-sub{font-size:14px;color:var(--muted);line-height:1.5;margin-bottom:24px}
+.searching-tips{background:#FFFBEB;border:1px solid #FEF3C7;border-radius:14px;padding:12px 16px;font-size:12px;color:#D97706;display:flex;align-items:center;gap:10px;width:100%;text-align:left}
+
+/* Driver Found */
+.driver-found-map{height:240px;background:linear-gradient(180deg,#E8F5F0,#D1E8DF);position:relative;overflow:hidden}
+.driver-found-map::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(15,118,110,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(15,118,110,.08) 1px,transparent 1px);background-size:40px 40px}
+.driver-bike{position:absolute;top:50%;left:30%;transform:translate(-50%,-50%);width:56px;height:56px;background:var(--amber);border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 20px rgba(245,158,11,.5);font-size:28px;animation:bikeMove 3s infinite ease-in-out}
+@keyframes bikeMove{0%,100%{left:30%}50%{left:55%}}
+.eta-badge{position:absolute;top:16px;left:16px;background:#fff;padding:8px 14px;border-radius:12px;font-size:13px;font-weight:700;color:var(--teal);box-shadow:0 4px 12px rgba(0,0,0,.08)}
+
+.driver-sheet{background:#fff;border-radius:28px 28px 0 0;margin-top:-20px;padding:16px 20px 20px;position:relative;z-index:5;box-shadow:0 -8px 24px rgba(0,0,0,.06)}
+.driver-card{display:flex;gap:14px;align-items:center;padding-bottom:16px;border-bottom:1px solid var(--border);margin-bottom:16px}
+.driver-avatar{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#14B8A6,var(--teal));display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;font-weight:700;flex-shrink:0;position:relative}
+.driver-avatar .verified{position:absolute;bottom:-2px;right:-2px;width:22px;height:22px;background:var(--success);border:2px solid #fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px}
+.driver-name{font-size:16px;font-weight:700}
+.driver-meta{font-size:12px;color:var(--muted);margin-top:2px;display:flex;align-items:center;gap:8px}
+.driver-rating{display:flex;align-items:center;gap:3px;color:var(--amber);font-weight:600}
+.local-badge{display:inline-flex;align-items:center;gap:4px;background:#F0FDFA;color:var(--teal);padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;margin-top:6px}
+.driver-vehicle{background:#F8FAFC;border-radius:12px;padding:10px 12px;font-size:12px;color:#334155;display:flex;align-items:center;gap:8px}
+.driver-vehicle strong{color:var(--text)}
+.action-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.action-btn{background:#fff;border:1.5px solid #E2E8F0;border-radius:14px;padding:12px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:13px;font-weight:700;color:#334155;cursor:pointer;min-height:48px;font-family:inherit}
+.action-btn:active{background:#F8FAFC;border-color:var(--teal)}
+.action-btn.primary{background:var(--teal);color:#fff;border-color:var(--teal)}
+
+/* Ongoing */
+.ride-progress{padding:20px}
+.progress-header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.progress-icon{width:48px;height:48px;background:#F0FDFA;border-radius:14px;display:flex;align-items:center;justify-content:center;color:var(--teal);font-size:24px}
+.progress-t1{font-size:12px;color:var(--muted)}
+.progress-t2{font-size:17px;font-weight:700}
+.progress-bar-wrap{background:#F1F5F9;height:8px;border-radius:4px;overflow:hidden;margin-bottom:10px}
+.progress-bar-fill{height:100%;background:linear-gradient(90deg,#14B8A6,var(--teal));border-radius:4px;width:20%;transition:width .5s}
+.progress-stats{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:24px}
+.progress-stats strong{color:var(--teal);font-weight:700}
+.ride-info-card{background:#fff;border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:16px}
+.ride-info-row{display:flex;justify-content:space-between;padding:8px 0;font-size:13px}
+.ride-info-row .label{color:var(--muted)}
+.ride-info-row .value{color:var(--text);font-weight:600;font-family:-apple-system,monospace}
+
+/* Complete */
+#complete{background:#fff;padding:40px 24px;text-align:center;min-height:100vh}
+.success-anim{width:100px;height:100px;margin:0 auto 24px;background:linear-gradient(135deg,var(--success),#059669);border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 15px 40px rgba(16,185,129,.35);font-size:52px;animation:successPop .5s ease-out}
+@keyframes successPop{0%{transform:scale(0)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
+.complete-title{font-size:22px;font-weight:800;margin-bottom:6px}
+.complete-sub{font-size:14px;color:var(--muted);margin-bottom:24px}
+.rating-card{background:#fff;border:1px solid var(--border);border-radius:20px;padding:20px;margin-bottom:20px;text-align:center}
+.rating-driver{display:flex;align-items:center;gap:12px;margin-bottom:16px;text-align:left}
+.rating-driver .av{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#14B8A6,var(--teal));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700}
+.rating-driver .n{font-size:15px;font-weight:700}
+.rating-driver .r{font-size:12px;color:var(--muted);margin-top:2px}
+.rating-label{font-size:13px;color:var(--muted);margin-bottom:12px}
+.stars{display:flex;justify-content:center;gap:8px;margin-bottom:16px}
+.star{width:40px;height:40px;cursor:pointer;color:#E2E8F0;font-size:32px;transition:all .15s;background:none;border:none}
+.star.active{color:var(--amber);transform:scale(1.1)}
+.star:active{transform:scale(.9)}
+.tip-row{display:flex;gap:8px;justify-content:center;margin-top:12px;flex-wrap:wrap}
+.tip-chip{padding:8px 14px;border-radius:10px;background:#F8FAFC;border:1.5px solid var(--border);font-size:12px;font-weight:700;color:#334155;cursor:pointer;font-family:inherit;min-height:40px}
+.tip-chip.active{background:#FFFBEB;border-color:var(--amber);color:#D97706}
+.receipt-card{background:#fff;border:1px solid var(--border);border-radius:16px;padding:16px;text-align:left;margin-bottom:20px}
+.receipt-title{font-size:13px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.receipt-row{display:flex;justify-content:space-between;padding:6px 0;font-size:12px}
+.receipt-row .l{color:var(--muted)}
+.receipt-row .v{color:var(--text);font-weight:600;font-family:-apple-system,monospace}
+.receipt-row.total{border-top:1px dashed #E2E8F0;margin-top:8px;padding-top:12px;font-size:14px}
+.receipt-row.total .v{color:var(--teal);font-weight:800;font-size:16px}
+
+/* History */
+.history-tabs{display:flex;padding:16px 20px 0;gap:8px}
+.history-tab{flex:1;padding:10px;background:transparent;border:none;border-bottom:2px solid transparent;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;font-family:inherit;min-height:44px}
+.history-tab.active{color:var(--teal);border-bottom-color:var(--teal)}
+.history-list{padding:16px 20px 100px}
+.history-item{background:#fff;border:1px solid var(--border);border-radius:16px;padding:14px;margin-bottom:10px;display:flex;gap:12px;cursor:pointer}
+.history-item:active{transform:scale(.98)}
+.history-icon{width:44px;height:44px;border-radius:12px;background:#F0FDFA;color:var(--teal);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:22px}
+.history-info{flex:1;min-width:0}
+.history-route{font-size:13px;font-weight:700;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.history-meta{font-size:11px;color:var(--muted);display:flex;gap:8px}
+.history-price{text-align:right;flex-shrink:0}
+.history-price .p{font-size:14px;font-weight:800;font-family:-apple-system,monospace}
+.history-price .d{font-size:10px;color:var(--muted);margin-top:2px}
+
+/* Profile */
+.profile-header{background:linear-gradient(160deg,var(--teal),var(--teal-dark));padding:56px 20px 32px;color:#fff;text-align:center;border-radius:0 0 28px 28px}
+.profile-avatar{width:88px;height:88px;border-radius:50%;background:linear-gradient(135deg,var(--amber),#D97706);display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:700;margin:0 auto 12px;border:3px solid rgba(255,255,255,.3)}
+.profile-name{font-size:18px;font-weight:700;margin-bottom:4px}
+.profile-phone{font-size:13px;opacity:.85}
+.profile-stats{display:flex;justify-content:space-around;margin-top:20px;padding-top:20px;border-top:1px solid rgba(255,255,255,.15)}
+.profile-stat .v{font-size:20px;font-weight:800;font-family:-apple-system,monospace}
+.profile-stat .l{font-size:11px;opacity:.85;margin-top:2px}
+.profile-menu{padding:20px 20px 100px}
+.menu-group{margin-bottom:20px}
+.menu-group-title{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;padding:0 4px 8px}
+.menu-item{background:#fff;border-radius:14px;padding:14px;display:flex;align-items:center;gap:14px;margin-bottom:6px;cursor:pointer;border:1px solid var(--border);min-height:56px}
+.menu-item:active{background:#F8FAFC}
+.menu-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px;color:#fff}
+.menu-text{flex:1;font-size:14px;font-weight:600}
+.menu-arrow{color:#94A3B8;font-size:18px}
+
+/* Driver Dashboard */
+#driverDashboard{background:var(--bg);min-height:100vh;padding-bottom:100px}
+.driver-header{background:linear-gradient(160deg,var(--teal),var(--teal-dark));padding:56px 20px 28px;color:#fff;border-radius:0 0 28px 28px}
+.driver-status-card{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:16px;margin-top:16px}
+.status-toggle{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.status-label{font-size:14px;font-weight:700}
+.toggle-switch{width:52px;height:28px;background:rgba(255,255,255,.3);border-radius:14px;position:relative;cursor:pointer;transition:background .3s}
+.toggle-switch.active{background:var(--success)}
+.toggle-knob{position:absolute;top:2px;left:2px;width:24px;height:24px;background:#fff;border-radius:50%;transition:left .3s}
+.toggle-switch.active .toggle-knob{left:26px}
+.driver-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+.driver-stat{background:rgba(255,255,255,.1);border-radius:12px;padding:10px;text-align:center}
+.driver-stat .v{font-size:18px;font-weight:800;font-family:-apple-system,monospace}
+.driver-stat .l{font-size:10px;opacity:.85;margin-top:2px}
+.order-card{background:#fff;border-radius:16px;padding:16px;margin:12px 20px;box-shadow:0 4px 12px rgba(0,0,0,.08);border:2px solid var(--amber);animation:orderPulse 2s infinite}
+@keyframes orderPulse{0%,100%{border-color:var(--amber)}50%{border-color:#FBBF24}}
+.order-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.order-type{font-size:11px;font-weight:700;background:var(--amber);color:var(--text);padding:3px 8px;border-radius:6px}
+.order-timer{font-size:12px;font-weight:700;color:var(--danger)}
+.order-route{margin-bottom:12px}
+.order-route .label{font-size:10px;color:var(--muted);text-transform:uppercase;font-weight:700}
+.order-route .value{font-size:13px;font-weight:600;margin-top:2px;margin-bottom:8px}
+.order-fare{display:flex;justify-content:space-between;padding:10px;background:#F0FDFA;border-radius:10px;margin-bottom:12px}
+.order-fare .label{font-size:12px;color:var(--muted)}
+.order-fare .value{font-size:16px;font-weight:800;color:var(--teal);font-family:-apple-system,monospace}
+.order-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.no-orders{text-align:center;padding:60px 20px;color:var(--muted)}
+.no-orders-icon{font-size:64px;margin-bottom:16px;opacity:.5}
+
+/* Toast */
+.toast{position:fixed;top:20px;left:20px;right:20px;background:#0F172A;color:#fff;padding:12px 16px;border-radius:12px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:10px;z-index:200;transform:translateY(-100px);opacity:0;transition:all .3s;box-shadow:0 12px 32px rgba(0,0,0,.3)}
+.toast.show{transform:translateY(0);opacity:1}
+.toast-icon{font-size:18px;flex-shrink:0}
+
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;display:none;align-items:flex-end;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal{background:#fff;border-radius:24px 24px 0 0;width:100%;max-height:80vh;overflow-y:auto;padding:20px}
+.modal-handle{width:40px;height:4px;background:#E2E8F0;border-radius:2px;margin:0 auto 16px}
+.modal-title{font-size:18px;font-weight:700;margin-bottom:16px}
+
+/* Lang Toggle */
+.lang-toggle{position:absolute;top:50px;right:16px;background:rgba(255,255,255,.15);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:4px;display:flex;z-index:101}
+.lang-btn{padding:4px 10px;border:none;background:transparent;color:rgba(255,255,255,.7);font-size:10px;font-weight:700;border-radius:16px;cursor:pointer;font-family:inherit}
+.lang-btn.active{background:#fff;color:var(--teal)}
+
+/* Loading */
+.loading{display:inline-block;width:20px;height:20px;border:3px solid rgba(255,255,255,.3);border-radius:50%;border-top-color:#fff;animation:spin 1s ease-in-out infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media(max-width:420px){.services-grid{grid-template-columns:repeat(4,1fr);gap:8px}.service-item{padding:10px 4px}}
+</style>
+</head>
+<body>
+
+<!-- ============ SPLASH ============ -->
+<div class="screen active" id="splash">
+    <div class="logo">🏍️</div>
+    <div class="splash-title">Tumimpu</div>
+    <div class="splash-tag">"Moposad tu Manggana" — Saling Membantu</div>
+    <button class="btn" onclick="showLogin()">Mulai Perjalanan</button>
+    <div style="position:absolute;bottom:40px;font-size:12px;opacity:.6">Kotamobagu • Bolaang Mongondow Raya</div>
+</div>
+
+<!-- ============ LOGIN ============ -->
+<div class="screen" id="login">
+    <div class="login-logo">🏍️</div>
+    <div class="login-title">Masuk ke Tumimpu</div>
+    <div class="login-sub">Gunakan nomor HP aktif Anda</div>
+    
+    <div id="phoneStep">
+        <div class="input-group">
+            <label class="input-label">Nomor HP</label>
+            <input type="tel" class="input" id="phoneInput" placeholder="+62 812-xxxx-xxxx" value="+6281234567890">
+        </div>
+        <button class="btn btn-block btn-teal" onclick="sendOTP()" id="sendOtpBtn">Kirim Kode OTP</button>
+        <div style="text-align:center;margin-top:20px;font-size:12px;color:var(--muted)">
+            Demo: Gunakan nomor apapun, OTP otomatis: <strong>123456</strong>
+        </div>
+    </div>
+    
+    <div id="otpStep" class="hidden">
+        <div style="text-align:center;margin-bottom:16px">
+            <div style="font-size:14px;color:var(--muted)">Kode OTP dikirim ke</div>
+            <div style="font-size:16px;font-weight:700;margin-top:4px" id="otpPhone">+62 812-xxxx-xxxx</div>
+        </div>
+        <div class="otp-inputs">
+            <input type="tel" class="otp-input" maxlength="1" id="otp1" oninput="otpNext(1)">
+            <input type="tel" class="otp-input" maxlength="1" id="otp2" oninput="otpNext(2)">
+            <input type="tel" class="otp-input" maxlength="1" id="otp3" oninput="otpNext(3)">
+            <input type="tel" class="otp-input" maxlength="1" id="otp4" oninput="otpNext(4)">
+            <input type="tel" class="otp-input" maxlength="1" id="otp5" oninput="otpNext(5)">
+            <input type="tel" class="otp-input" maxlength="1" id="otp6" oninput="otpNext(6)">
+        </div>
+        <button class="btn btn-block btn-teal" onclick="verifyOTP()" id="verifyBtn">Verifikasi</button>
+        <button class="btn btn-block btn-outline" style="margin-top:10px" onclick="backToPhone()">Ganti Nomor</button>
+    </div>
+</div>
+
+<!-- ============ HOME ============ -->
+<div class="screen" id="home">
+    <div class="header">
+        <div class="lang-toggle">
+            <button class="lang-btn active" onclick="setLang('id')">ID</button>
+            <button class="lang-btn" onclick="setLang('mongondow')">Mongondow</button>
+        </div>
+        <div class="greeting">
+            <div>
+                <div class="greeting-hi" data-i18n="hi">Tabea, selamat pagi 👋</div>
+                <div class="greeting-name" id="userName">Andi Mongondow</div>
+                <button class="driver-toggle" id="driverToggle" onclick="toggleDriverMode()">
+                    <span>🏍️</span> <span data-i18n="driverMode">Mode Driver</span>
+                </button>
+            </div>
+            <div class="avatar" onclick="goTo('profile')">AM</div>
+        </div>
+        <div class="wallet-card">
+            <div>
+                <div class="wallet-label" data-i18n="wallet">Saldo Tumimpu</div>
+                <div class="wallet-balance" id="walletBalance">Rp 250.000</div>
+            </div>
+            <button class="topup-btn" onclick="showTopup()">+ Top Up</button>
+        </div>
+    </div>
+    
+    <div class="content">
+        <div class="search-label" data-i18n="whereTo">Mau ke mana hari ini?</div>
+        <div class="search-box" onclick="goTo('location')">
+            <div class="search-icon">📍</div>
+            <div style="flex:1">
+                <div class="search-main" data-i18n="searchPlaceholder">Cari tujuan Anda...</div>
+                <div class="search-sub" data-i18n="searchSub">Pilih dari lokasi favorit di Kotamobagu</div>
+            </div>
+            <div style="color:var(--muted)">›</div>
+        </div>
+
+        <div class="search-label" data-i18n="services">Layanan Kami</div>
+        <div class="services-grid">
+            <div class="service-item" onclick="selectService('ride')">
+                <div class="service-icon" style="background:#0F766E;color:#fff">🏍️</div>
+                <div class="service-name">Tumimpu<br>Ride</div>
+            </div>
+            <div class="service-item" onclick="selectService('send')">
+                <div class="service-icon" style="background:#F59E0B;color:#fff">📦</div>
+                <div class="service-name">Tumimpu<br>Send</div>
+            </div>
+            <div class="service-item" onclick="selectService('food')">
+                <div class="service-icon" style="background:#EF4444;color:#fff">🍔</div>
+                <div class="service-name">Tumimpu<br>Food</div>
+            </div>
+            <div class="service-item" onclick="selectService('mart')">
+                <div class="service-icon" style="background:#8B5CF6;color:#fff">🛒</div>
+                <div class="service-name">Tumimpu<br>Mart</div>
+            </div>
+        </div>
+
+        <div class="promo-banner" onclick="showToast('🎉 Promo berlaku untuk pengguna baru')">
+            <div class="promo-badge">PROMO LAUNCHING</div>
+            <div class="promo-title" data-i18n="promoTitle">Diskon 50% Naik Tumimpu!</div>
+            <div class="promo-desc" data-i18n="promoDesc">Khusus warga Kotamobagu & Bolmong Raya. Berlaku s/d 30 November.</div>
+        </div>
+
+        <div class="fairness-card">
+            <div class="fairness-icon">🛡️</div>
+            <div>
+                <div class="fairness-t1" data-i18n="fairTitle">Komisi Transparan Maksimal 20%</div>
+                <div class="fairness-t2" data-i18n="fairDesc">Sesuai regulasi. Anda lihat langsung berapa yang diterima mitra driver.</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <button class="nav-item active" onclick="goTo('home')">
+            <div class="nav-icon">🏠</div>
+            <div class="nav-label">Beranda</div>
+        </button>
+        <button class="nav-item" onclick="goTo('history')">
+            <div class="nav-icon">🕐</div>
+            <div class="nav-label">Riwayat</div>
+        </button>
+        <button class="nav-item" onclick="showToast('💬 Chat segera hadir')">
+            <div class="nav-icon">💬</div>
+            <div class="nav-label">Chat</div>
+        </button>
+        <button class="nav-item" onclick="goTo('profile')">
+            <div class="nav-icon">👤</div>
+            <div class="nav-label">Akun</div>
+        </button>
+    </div>
+</div>
+
+<!-- ============ LOCATION PICKER ============ -->
+<div class="screen" id="location">
+    <div class="app-bar">
+        <button class="icon-btn" onclick="goTo('home')">←</button>
+        <div class="app-bar-title">Pilih Tujuan</div>
+    </div>
+    <div style="padding-bottom:40px">
+        <div class="loc-group-title">📍 Lokasi Anda</div>
+        <div class="loc-item" onclick="setPickup('Mokubu, Kotamobagu Timur')">
+            <div class="loc-icon">📍</div>
+            <div style="flex:1">
+                <div class="loc-name">Mokubu</div>
+                <div class="loc-addr">Kotamobagu Timur, Kotamobagu</div>
+            </div>
+        </div>
+
+        <div class="loc-group-title">⭐ Favorit di Kotamobagu</div>
+        <div class="loc-item" onclick="setDest('Pasar Besar Kotamobagu','Jl. A. Yani, Kotamobagu Selatan',4.2,8500)">
+            <div class="loc-icon dest">🛍️</div>
+            <div style="flex:1">
+                <div class="loc-name">Pasar Besar Kotamobagu</div>
+                <div class="loc-addr">Jl. A. Yani, Kotamobagu Selatan</div>
+            </div>
+        </div>
+        <div class="loc-item" onclick="setDest('Terminal Kotamobagu','Jl. Trans Sulawesi, Kotamobagu Barat',6.8,12000)">
+            <div class="loc-icon dest">🚌</div>
+            <div style="flex:1">
+                <div class="loc-name">Terminal Kotamobagu</div>
+                <div class="loc-addr">Jl. Trans Sulawesi, Kotamobagu Barat</div>
+            </div>
+        </div>
+        <div class="loc-item" onclick="setDest('RSUD Kotamobagu','Jl. Kesehatan, Kotamobagu Selatan',5.1,9500)">
+            <div class="loc-icon dest">🏥</div>
+            <div style="flex:1">
+                <div class="loc-name">RSUD Kotamobagu</div>
+                <div class="loc-addr">Jl. Kesehatan, Kotamobagu Selatan</div>
+            </div>
+        </div>
+        <div class="loc-item" onclick="setDest('Alun-Alun Kotamobagu','Pusat Kota, Kotamobagu',3.2,6000)">
+            <div class="loc-icon dest">🏛️</div>
+            <div style="flex:1">
+                <div class="loc-name">Alun-Alun Kotamobagu</div>
+                <div class="loc-addr">Pusat Kota, Kotamobagu</div>
+            </div>
+        </div>
+        <div class="loc-item" onclick="setDest('Masjid Raya Kotamobagu','Jl. Masjid Raya, Kotamobagu Timur',4.0,7500)">
+            <div class="loc-icon dest">🕌</div>
+            <div style="flex:1">
+                <div class="loc-name">Masjid Raya Kotamobagu</div>
+                <div class="loc-addr">Jl. Masjid Raya, Kotamobagu Timur</div>
+            </div>
+        </div>
+        <div class="loc-item" onclick="setDest('Lolak, Bolaang Mongondow','Kec. Lolak, Kab. Bolaang Mongondow',18.5,25000)">
+            <div class="loc-icon dest">🏘️</div>
+            <div style="flex:1">
+                <div class="loc-name">Lolak, Bolaang Mongondow</div>
+                <div class="loc-addr">Kec. Lolak, Kab. Bolaang Mongondow</div>
+            </div>
+        </div>
+        <div class="loc-item" onclick="setDest('Modayag, Boltim','Kec. Modayag, Kab. Boltim',22.0,30000)">
+            <div class="loc-icon dest">🏘️</div>
+            <div style="flex:1">
+                <div class="loc-name">Modayag, Bolaang Mongondow Timur</div>
+                <div class="loc-addr">Kec. Modayag, Kab. Boltim</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============ BOOKING ============ -->
+<div class="screen" id="booking">
+    <div class="map-area">
+        <div class="map-info">
+            <div class="pulse-dot"></div>
+            <div style="flex:1">
+                <div style="font-weight:700">3 driver terdekat</div>
+                <div style="font-size:11px;color:var(--muted);margin-top:1px">Estimasi jemput 4 menit</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="booking-sheet">
+        <div class="sheet-handle"></div>
+
+        <div class="route-summary">
+            <div class="route-dots">
+                <div class="d1"></div>
+                <div class="line"></div>
+                <div class="d2"></div>
+            </div>
+            <div class="route-info">
+                <div>
+                    <div class="route-label">Jemput</div>
+                    <div class="route-name" id="pickupName">Mokubu, Kotamobagu Timur</div>
+                </div>
+                <div>
+                    <div class="route-label">Tujuan</div>
+                    <div class="route-name" id="dropoffName">Pasar Besar Kotamobagu</div>
+                </div>
+                <div class="route-meta">
+                    <span>⏱️ <span id="duration">12</span> menit</span>
+                    <span>📏 <span id="distance">4.2</span> km</span>
+                    <span>🛣️ <span id="terrain">Datar</span></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="service-selector">
+            <button class="service-chip active" onclick="selectServiceChip(this,'ride')">🏍️ Tumimpu Ride</button>
+            <button class="service-chip" onclick="selectServiceChip(this,'hemat')">💰 Hemat</button>
+            <button class="service-chip" onclick="selectServiceChip(this,'premium')">⭐ Premium</button>
+        </div>
+
+        <div class="fare-card">
+            <div class="fare-header">
+                <div>
+                    <div class="fare-label">Total Tarif</div>
+                    <div class="fare-total">Rp <span id="fareTotal">8.500</span></div>
+                </div>
+                <div class="fairness-badge">🛡️ KOMISI MAKS 20%</div>
+            </div>
+            <div class="fare-breakdown">
+                <div class="breakdown-row">
+                    <span class="label">Tarif dasar (<span id="fareDistance">4.2</span> km)</span>
+                    <span class="value">Rp <span id="baseFare">7.500</span></span>
+                </div>
+                <div class="breakdown-row">
+                    <span class="label">Biaya medan (<span id="fareTerrain">datar</span>)</span>
+                    <span class="value">Rp <span id="terrainFee">1.000</span></span>
+                </div>
+                <div class="breakdown-divider"></div>
+                <div class="breakdown-row">
+                    <span class="label">⚙️ Komisi aplikasi (20%)</span>
+                    <span class="value commission-val">- Rp <span id="commission">1.700</span></span>
+                </div>
+                <div class="breakdown-divider"></div>
+                <div class="breakdown-row driver">
+                    <span class="label">💰 Diterima Mitra Driver</span>
+                    <span class="value">Rp <span id="driverEarning">6.800</span></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="payment-row" onclick="showPaymentModal()">
+            <div class="payment-icon">💳</div>
+            <div class="payment-info">
+                <div class="payment-t1">Saldo Tumimpu</div>
+                <div class="payment-t2">Tersedia Rp 250.000</div>
+            </div>
+            <div style="color:var(--muted)">›</div>
+        </div>
+
+        <button class="btn btn-block" onclick="bookRide()">🏍️ Pesan Tumimpu Sekarang</button>
+    </div>
+</div>
+
+<!-- ============ SEARCHING ============ -->
+<div class="screen" id="searching">
+    <div class="radar">
+        <div class="radar-ring r1"></div>
+        <div class="radar-ring r2"></div>
+        <div class="radar-ring r3"></div>
+        <div class="radar-center">🏍️</div>
+    </div>
+    <div class="searching-title">Mencari Mitra Driver...</div>
+    <div class="searching-sub">Mencari driver terdekat di area Kotamobagu. Biasanya kurang dari 30 detik.</div>
+    <div class="searching-tips">
+        <span style="font-size:18px">💡</span>
+        <span>Tips: Pastikan Anda di lokasi jemput yang mudah ditemukan driver.</span>
+    </div>
+    <button class="btn btn-block btn-outline" style="margin-top:24px" onclick="cancelSearch()">Batalkan</button>
+</div>
+
+<!-- ============ DRIVER FOUND ============ -->
+<div class="screen" id="driver">
+    <div class="driver-found-map">
+        <div class="driver-bike">🏍️</div>
+        <div class="eta-badge">⏱️ <span id="etaTime">4</span> menit lagi sampai</div>
+    </div>
+    <div class="driver-sheet">
+        <div class="driver-card">
+            <div class="driver-avatar">
+                <span id="driverInitial">BS</span>
+                <div class="verified">✓</div>
+            </div>
+            <div style="flex:1">
+                <div class="driver-name" id="driverName">Bapak Samin Bolmong</div>
+                <div class="driver-meta">
+                    <div class="driver-rating">⭐ <span id="driverRating">4.9</span> (<span id="driverTrips">284</span> perjalanan)</div>
+                </div>
+                <div class="local-badge">📍 <span id="driverArea">Driver Lokal Kotamobagu Timur</span></div>
+            </div>
+        </div>
+
+        <div class="driver-vehicle">
+            🏍️ <span id="driverVehicle">Honda Beat · KH 1234 BS · Hitam</span>
+        </div>
+
+        <div class="action-row">
+            <button class="action-btn" onclick="showToast('📞 Menghubungi driver...')">📞 Telepon</button>
+            <button class="action-btn" onclick="showToast('💬 Chat dengan driver...')">💬 Chat</button>
+        </div>
+
+        <button class="btn btn-block btn-teal" style="margin-top:16px" onclick="startRide()">▶️ Mulai Perjalanan</button>
+    </div>
+</div>
+
+<!-- ============ ONGOING RIDE ============ -->
+<div class="screen" id="ongoing">
+    <div class="ride-progress">
+        <div class="progress-header">
+            <div class="progress-icon">🏍️</div>
+            <div>
+                <div class="progress-t1">Perjalanan Berlangsung</div>
+                <div class="progress-t2" id="ongoingDest">Menuju Pasar Besar Kotamobagu</div>
+            </div>
+        </div>
+
+        <div class="progress-bar-wrap">
+            <div class="progress-bar-fill" id="progressBar"></div>
+        </div>
+        <div class="progress-stats">
+            <span>⏱️ ETA <strong id="etaRemaining">8 menit</strong></span>
+            <span>📏 <strong id="distRemaining">2.7 km</strong> lagi</span>
+        </div>
+
+        <div class="ride-info-card">
+            <div class="ride-info-row">
+                <span class="label">Mitra Driver</span>
+                <span class="value" id="ongoingDriver">Bapak Samin B.</span>
+            </div>
+            <div class="ride-info-row">
+                <span class="label">Kendaraan</span>
+                <span class="value" id="ongoingVehicle">Honda Beat · KH 1234 BS</span>
+            </div>
+            <div class="ride-info-row">
+                <span class="label">Total Tarif</span>
+                <span class="value" style="color:var(--teal);font-size:15px" id="ongoingFare">Rp 8.500</span>
+            </div>
+        </div>
+
+        <div class="fairness-card" style="margin:0 0 16px">
+            <div class="fairness-icon">🛡️</div>
+            <div>
+                <div class="fairness-t1">Driver menerima Rp <span id="ongoingDriverEarn">6.800</span></div>
+                <div class="fairness-t2">Komisi aplikasi 20% (Rp <span id="ongoingCommission">1.700</span>) — transparan & adil</div>
+            </div>
+        </div>
+
+        <div class="action-row">
+            <button class="action-btn" onclick="showToast('📞 Hubungi driver...')">📞 Hubungi</button>
+            <button class="action-btn" style="color:var(--danger);border-color:#FEE2E2" onclick="showToast('🆘 Darurat? Hubungi 112')">🆘 Darurat</button>
+        </div>
+    </div>
+</div>
+
+<!-- ============ COMPLETE ============ -->
+<div class="screen" id="complete">
+    <div class="success-anim">✓</div>
+    <div class="complete-title">Perjalanan Selesai!</div>
+    <div class="complete-sub">Tabea, terima kasih sudah menggunakan Tumimpu 🙏</div>
+
+    <div class="rating-card">
+        <div class="rating-driver">
+            <div class="av" id="completeDriverInit">BS</div>
+            <div>
+                <div class="n" id="completeDriverName">Bapak Samin Bolmong</div>
+                <div class="r" id="completeVehicle">Honda Beat · KH 1234 BS</div>
+            </div>
+        </div>
+        <div class="rating-label">Bagaimana perjalanan Anda?</div>
+        <div class="stars" id="stars">
+            <button class="star" data-v="1" onclick="setRating(1)">★</button>
+            <button class="star" data-v="2" onclick="setRating(2)">★</button>
+            <button class="star" data-v="3" onclick="setRating(3)">★</button>
+            <button class="star" data-v="4" onclick="setRating(4)">★</button>
+            <button class="star" data-v="5" onclick="setRating(5)">★</button>
+        </div>
+        <div class="rating-label">Beri tip untuk mitra driver?</div>
+        <div class="tip-row">
+            <button class="tip-chip" onclick="selectTip(this,0)">Tidak</button>
+            <button class="tip-chip" onclick="selectTip(this,2000)">Rp 2.000</button>
+            <button class="tip-chip active" onclick="selectTip(this,5000)">Rp 5.000</button>
+            <button class="tip-chip" onclick="selectTip(this,10000)">Rp 10.000</button>
+        </div>
+    </div>
+
+    <div class="receipt-card">
+        <div class="receipt-title">🧾 Rincian Transparan</div>
+        <div class="receipt-row"><span class="l">Tarif dasar</span><span class="v" id="receiptBase">Rp 7.500</span></div>
+        <div class="receipt-row"><span class="l">Biaya medan</span><span class="v" id="receiptTerrain">Rp 1.000</span></div>
+        <div class="receipt-row"><span class="l">Komisi aplikasi (20%)</span><span class="v" style="color:var(--danger)" id="receiptCommission">- Rp 1.700</span></div>
+        <div class="receipt-row"><span class="l">💰 Diterima Driver</span><span class="v" style="color:var(--amber)" id="receiptDriver">Rp 6.800</span></div>
+        <div class="receipt-row total"><span class="l">Total yang Anda bayar</span><span class="v" id="receiptTotal">Rp 8.500</span></div>
+    </div>
+
+    <button class="btn btn-block btn-teal" onclick="finishRide()">Selesai</button>
+</div>
+
+<!-- ============ HISTORY ============ -->
+<div class="screen" id="history">
+    <div class="app-bar">
+        <button class="icon-btn" onclick="goTo('home')">←</button>
+        <div class="app-bar-title">Riwayat Perjalanan</div>
+    </div>
+    <div class="history-tabs">
+        <button class="history-tab active" onclick="filterHistory(this,'all')">Semua</button>
+        <button class="history-tab" onclick="filterHistory(this,'ride')">Ride</button>
+        <button class="history-tab" onclick="filterHistory(this,'send')">Send</button>
+        <button class="history-tab" onclick="filterHistory(this,'food')">Food</button>
+    </div>
+    <div class="history-list" id="historyList"></div>
+    <div class="bottom-nav">
+        <button class="nav-item" onclick="goTo('home')"><div class="nav-icon">🏠</div><div class="nav-label">Beranda</div></button>
+        <button class="nav-item active" onclick="goTo('history')"><div class="nav-icon">🕐</div><div class="nav-label">Riwayat</div></button>
+        <button class="nav-item" onclick="showToast('💬 Chat segera hadir')"><div class="nav-icon">💬</div><div class="nav-label">Chat</div></button>
+        <button class="nav-item" onclick="goTo('profile')"><div class="nav-icon">👤</div><div class="nav-label">Akun</div></button>
+    </div>
+</div>
+
+<!-- ============ PROFILE ============ -->
+<div class="screen" id="profile">
+    <div class="profile-header">
+        <div class="profile-avatar" id="profileAvatar">AM</div>
+        <div class="profile-name" id="profileName">Andi Mongondow</div>
+        <div class="profile-phone" id="profilePhone">+62 812-xxxx-xxxx</div>
+        <div class="profile-stats">
+            <div class="profile-stat"><div class="v" id="statTrips">47</div><div class="l">Perjalanan</div></div>
+            <div class="profile-stat"><div class="v">4.9</div><div class="l">Rating</div></div>
+            <div class="profile-stat"><div class="v" id="statWallet">Rp 250K</div><div class="l">Saldo</div></div>
+        </div>
+    </div>
+    <div class="profile-menu">
+        <div class="menu-group">
+            <div class="menu-group-title">Akun Saya</div>
+            <div class="menu-item" onclick="showToast('👤 Edit profil')">
+                <div class="menu-icon" style="background:#0F766E">👤</div>
+                <div class="menu-text">Edit Profil</div>
+                <div class="menu-arrow">›</div>
+            </div>
+            <div class="menu-item" onclick="showToast('📍 Alamat tersimpan')">
+                <div class="menu-icon" style="background:#F59E0B">📍</div>
+                <div class="menu-text">Alamat Tersimpan</div>
+                <div class="menu-arrow">›</div>
+            </div>
+            <div class="menu-item" onclick="showToast('💳 Metode pembayaran')">
+                <div class="menu-icon" style="background:#8B5CF6">💳</div>
+                <div class="menu-text">Metode Pembayaran</div>
+                <div class="menu-arrow">›</div>
+            </div>
+        </div>
+        <div class="menu-group">
+            <div class="menu-group-title">Preferensi</div>
+            <div class="menu-item" onclick="showToast('🌐 Bahasa: Indonesia / Mongondow')">
+                <div class="menu-icon" style="background:#EF4444">🌐</div>
+                <div class="menu-text">Bahasa</div>
+                <div class="menu-arrow">›</div>
+            </div>
+            <div class="menu-item" onclick="showToast('🔋 Mode hemat data: Aktif')">
+                <div class="menu-icon" style="background:#10B981">🔋</div>
+                <div class="menu-text">Mode Hemat Data</div>
+                <div class="menu-arrow">›</div>
+            </div>
+            <div class="menu-item" onclick="showToast('🔔 Notifikasi aktif')">
+                <div class="menu-icon" style="background:#F59E0B">🔔</div>
+                <div class="menu-text">Notifikasi</div>
+                <div class="menu-arrow">›</div>
+            </div>
+        </div>
+        <div class="menu-group">
+            <div class="menu-group-title">Lainnya</div>
+            <div class="menu-item" onclick="showToast('❓ Pusat bantuan 24/7')">
+                <div class="menu-icon" style="background:#64748B">❓</div>
+                <div class="menu-text">Pusat Bantuan</div>
+                <div class="menu-arrow">›</div>
+            </div>
+            <div class="menu-item" onclick="showToast('ℹ️ Tumimpu v1.0.0 Beta')">
+                <div class="menu-icon" style="background:#0F766E">ℹ️</div>
+                <div class="menu-text">Tentang Tumimpu</div>
+                <div class="menu-arrow">›</div>
+            </div>
+            <div class="menu-item" onclick="logout()" style="border-color:#FEE2E2">
+                <div class="menu-icon" style="background:#EF4444">🚪</div>
+                <div class="menu-text" style="color:#EF4444">Keluar</div>
+                <div class="menu-arrow">›</div>
+            </div>
+        </div>
+    </div>
+    <div class="bottom-nav">
+        <button class="nav-item" onclick="goTo('home')"><div class="nav-icon">🏠</div><div class="nav-label">Beranda</div></button>
+        <button class="nav-item" onclick="goTo('history')"><div class="nav-icon">🕐</div><div class="nav-label">Riwayat</div></button>
+        <button class="nav-item" onclick="showToast('💬 Chat segera hadir')"><div class="nav-icon">💬</div><div class="nav-label">Chat</div></button>
+        <button class="nav-item active" onclick="goTo('profile')"><div class="nav-icon">👤</div><div class="nav-label">Akun</div></button>
+    </div>
+</div>
+
+<!-- ============ DRIVER DASHBOARD ============ -->
+<div class="screen" id="driverDashboard">
+    <div class="driver-header">
+        <div class="greeting">
+            <div>
+                <div class="greeting-hi">Mode Driver Aktif 🏍️</div>
+                <div class="greeting-name" id="driverDashName">Bapak Samin</div>
+            </div>
+            <div class="avatar" onclick="exitDriverMode()">✕</div>
+        </div>
+        <div class="driver-status-card">
+            <div class="status-toggle">
+                <div class="status-label">Status Online</div>
+                <div class="toggle-switch" id="onlineToggle" onclick="toggleOnline()">
+                    <div class="toggle-knob"></div>
+                </div>
+            </div>
+            <div class="driver-stats">
+                <div class="driver-stat"><div class="v" id="todayTrips">0</div><div class="l">Perjalanan Hari Ini</div></div>
+                <div class="driver-stat"><div class="v" id="todayEarn">Rp 0</div><div class="l">Pendapatan</div></div>
+                <div class="driver-stat"><div class="v">4.9</div><div class="l">Rating</div></div>
+            </div>
+        </div>
+    </div>
+    
+    <div style="padding:20px">
+        <div class="search-label">📦 Order Masuk</div>
+    </div>
+    <div id="ordersContainer"></div>
+    
+    <div class="bottom-nav">
+        <button class="nav-item active" onclick="goTo('driverDashboard')"><div class="nav-icon">🏍️</div><div class="nav-label">Dashboard</div></button>
+        <button class="nav-item" onclick="goTo('history')"><div class="nav-icon">🕐</div><div class="nav-label">Riwayat</div></button>
+        <button class="nav-item" onclick="showToast('💰 Earning')"><div class="nav-icon">💰</div><div class="nav-label">Earning</div></button>
+        <button class="nav-item" onclick="goTo('profile')"><div class="nav-icon">👤</div><div class="nav-label">Akun</div></button>
+    </div>
+</div>
+
+<!-- ============ MODALS ============ -->
+<div class="modal-overlay" id="topupModal">
+    <div class="modal">
+        <div class="modal-handle"></div>
+        <div class="modal-title">Top Up Saldo</div>
+        <div class="input-group">
+            <label class="input-label">Jumlah (Rp)</label>
+            <input type="number" class="input" id="topupAmount" placeholder="50000" value="50000">
+        </div>
+        <div class="search-label" style="margin-top:16px">Pilih Metode</div>
+        <div class="payment-row" style="margin-bottom:8px">
+            <div class="payment-icon">🏦</div>
+            <div class="payment-info"><div class="payment-t1">Virtual Account BCA</div><div class="payment-t2">Auto-verify</div></div>
+        </div>
+        <div class="payment-row" style="margin-bottom:8px">
+            <div class="payment-icon">🏦</div>
+            <div class="payment-info"><div class="payment-t1">Virtual Account BRI</div><div class="payment-t2">Auto-verify</div></div>
+        </div>
+        <div class="payment-row" style="margin-bottom:16px">
+            <div class="payment-icon">💳</div>
+            <div class="payment-info"><div class="payment-t1">DANA / OVO / ShopeePay</div><div class="payment-t2">E-Wallet</div></div>
+        </div>
+        <button class="btn btn-block btn-teal" onclick="doTopup()">Top Up Sekarang</button>
+        <button class="btn btn-block btn-outline" style="margin-top:8px" onclick="closeModal('topupModal')">Batal</button>
+    </div>
+</div>
+
+<div class="modal-overlay" id="paymentModal">
+    <div class="modal">
+        <div class="modal-handle"></div>
+        <div class="modal-title">Pilih Metode Pembayaran</div>
+        <div class="payment-row" style="margin-bottom:8px;border-color:var(--teal);background:#F0FDFA" onclick="closeModal('paymentModal')">
+            <div class="payment-icon">💳</div>
+            <div class="payment-info"><div class="payment-t1">Saldo Tumimpu</div><div class="payment-t2">Tersedia Rp 250.000</div></div>
+            <div style="color:var(--teal);font-weight:700">✓</div>
+        </div>
+        <div class="payment-row" style="margin-bottom:8px" onclick="showToast('💵 Pembayaran tunai saat tiba')">
+            <div class="payment-icon">💵</div>
+            <div class="payment-info"><div class="payment-t1">Tunai</div><div class="payment-t2">Bayar ke driver</div></div>
+        </div>
+        <div class="payment-row" style="margin-bottom:8px" onclick="showToast('💳 QRIS segera hadir')">
+            <div class="payment-icon">📱</div>
+            <div class="payment-info"><div class="payment-t1">QRIS</div><div class="payment-t2">Scan & bayar</div></div>
+        </div>
+        <button class="btn btn-block btn-outline" style="margin-top:16px" onclick="closeModal('paymentModal')">Tutup</button>
+    </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"><span class="toast-icon" id="toastIcon">✓</span><span id="toastMsg">Notifikasi</span></div>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+
+<script>
+// ============================================
+// FIREBASE CONFIG - GANTI DENGAN CONFIG ANDA!
+// ============================================
+const firebaseConfig = {
+  apiKey: "AIzaSyCDaNuYXKVDvxVVAQEXt5GYJKfQawZlWTY",
+  authDomain: "tumimpu-beta.firebaseapp.com",
+  projectId: "tumimpu-beta",
+  storageBucket: "tumimpu-beta.firebasestorage.app",
+  messagingSenderId: "210598287939",
+  appId: "1:210598287939:web:68125e4fa94763c5c612f6"
+};
+
+// Initialize Firebase (fallback ke demo mode jika gagal)
+let db = null, auth = null, firebaseReady = false;
+try {
+    if (firebaseConfig.apiKey && !firebaseConfig.apiKey.startsWith('GANTI')) {
+        firebase.initializeApp(firebaseConfig);
+        db = firebase.firestore();
+        auth = firebase.auth();
+        firebaseReady = true;
+        console.log('✅ Firebase connected');
+    } else {
+        console.log('⚠️ Firebase config belum diisi, menggunakan DEMO MODE');
+    }
+} catch(e) {
+    console.log('⚠️ Firebase error, DEMO MODE:', e.message);
+}
+
+// ============================================
+// STATE MANAGEMENT
+// ============================================
+const state = {
+    user: null,
+    currentScreen: 'splash',
+    isDriverMode: false,
+    isOnline: false,
+    currentRide: null,
+    currentService: 'ride',
+    selectedTip: 5000,
+    rating: 0,
+    wallet: 250000,
+    lang: 'id',
+    history: [
+        {id:'h1',type:'ride',route:'Mokubu → Pasar Besar',date:'Hari ini, 09:15',driver:'Bapak Samin B.',fare:8500,distance:'4.2 km'},
+        {id:'h2',type:'ride',route:'Alun-Alun → RSUD',date:'Kemarin, 14:30',driver:'Ibu Maya K.',fare:9500,distance:'3.8 km'},
+        {id:'h3',type:'send',route:'Kotamobagu → Lolak',date:'3 Nov, 08:00',driver:'Tumimpu Send',fare:25000,distance:'18.5 km'},
+        {id:'h4',type:'food',route:'Warung Nasi → Mokubu',date:'2 Nov, 12:30',driver:'Bapak Jemy T.',fare:15000,distance:'2.1 km'},
+        {id:'h5',type:'ride',route:'Terminal → Mokubu',date:'1 Nov, 17:45',driver:'Bapak Jemy T.',fare:12000,distance:'5.1 km'}
+    ],
+    booking: {
+        pickup: 'Mokubu, Kotamobagu Timur',
+        dropoff: 'Pasar Besar Kotamobagu',
+        distance: 4.2,
+        duration: 12,
+        terrain: 'datar',
+        baseFare: 7500,
+        terrainFee: 1000,
+        totalFare: 8500,
+        commission: 1700,
+        driverEarning: 6800
+    },
+    driver: {
+        name: 'Bapak Samin Bolmong',
+        initial: 'BS',
+        rating: 4.9,
+        trips: 284,
+        vehicle: 'Honda Beat · KH 1234 BS · Hitam',
+        area: 'Driver Lokal Kotamobagu Timur'
+    },
+    demoDrivers: [
+        {id:'d1',name:'Bapak Samin Bolmong',initial:'BS',rating:4.9,trips:284,vehicle:'Honda Beat · KH 1234 BS',area:'Kotamobagu Timur'},
+        {id:'d2',name:'Ibu Maya Kotamobagu',initial:'MK',rating:4.8,trips:156,vehicle:'Yamaha Mio · KH 5678 MK',area:'Kotamobagu Selatan'},
+        {id:'d3',name:'Bapak Jemy Tumotoibokol',initial:'JT',rating:5.0,trips:412,vehicle:'Honda Vario · KH 9012 JT',area:'Kotamobagu Barat'}
+    ]
+};
+
+// ============================================
+// NAVIGATION
+// ============================================
+function goTo(screenId) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    const target = document.getElementById(screenId);
+    if (target) {
+        target.classList.add('active');
+        state.currentScreen = screenId;
+        window.scrollTo(0, 0);
+        
+        if (screenId === 'history') renderHistory();
+    }
+}
+
+function showLogin() { goTo('login'); }
+
+// ============================================
+// AUTHENTICATION
+// ============================================
+function sendOTP() {
+    const phone = document.getElementById('phoneInput').value;
+    if (phone.length < 10) {
+        showToast('⚠️ Nomor HP tidak valid');
+        return;
+    }
+    
+    const btn = document.getElementById('sendOtpBtn');
+    btn.innerHTML = '<span class="loading"></span> Mengirim...';
+    btn.disabled = true;
+    
+    setTimeout(() => {
+        document.getElementById('otpPhone').textContent = phone;
+        document.getElementById('phoneStep').classList.add('hidden');
+        document.getElementById('otpStep').classList.remove('hidden');
+        document.getElementById('otp1').focus();
+        btn.innerHTML = 'Kirim Kode OTP';
+        btn.disabled = false;
+        showToast('✓ Kode OTP: 123456 (demo)');
+    }, 1000);
+}
+
+function otpNext(n) {
+    const input = document.getElementById('otp' + n);
+    if (input.value.length === 1 && n < 6) {
+        document.getElementById('otp' + (n + 1)).focus();
+    }
+}
+
+function verifyOTP() {
+    const otp = [1,2,3,4,5,6].map(i => document.getElementById('otp'+i).value).join('');
+    
+    if (otp !== '123456') {
+        showToast('❌ OTP salah. Gunakan: 123456');
+        return;
+    }
+    
+    const btn = document.getElementById('verifyBtn');
+    btn.innerHTML = '<span class="loading"></span> Memverifikasi...';
+    
+    setTimeout(() => {
+        state.user = {
+            phone: document.getElementById('otpPhone').textContent,
+            name: 'Andi Mongondow'
+        };
+        
+        // Save to Firebase if ready
+        if (firebaseReady) {
+            db.collection('users').doc('demo_user').set({
+                phone: state.user.phone,
+                name: state.user.name,
+                wallet: state.wallet,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            }).catch(e => console.log('Firestore save error:', e));
+        }
+        
+        document.getElementById('userName').textContent = state.user.name;
+        document.getElementById('profileName').textContent = state.user.name;
+        document.getElementById('profilePhone').textContent = state.user.phone;
+        document.getElementById('profileAvatar').textContent = state.user.name.split(' ').map(n=>n[0]).join('').substring(0,2);
+        
+        goTo('home');
+        showToast('🎉 Selamat datang di Tumimpu!');
+    }, 1000);
+}
+
+function backToPhone() {
+    document.getElementById('phoneStep').classList.remove('hidden');
+    document.getElementById('otpStep').classList.add('hidden');
+    [1,2,3,4,5,6].forEach(i => document.getElementById('otp'+i).value = '');
+}
+
+function logout() {
+    if (confirm('Keluar dari Tumimpu?')) {
+        state.user = null;
+        goTo('splash');
+        showToast('👋 Sampai jumpa!');
+    }
+}
+
+// ============================================
+// LOCATION & BOOKING
+// ============================================
+function setPickup(name) {
+    state.booking.pickup = name;
+    showToast('📍 Jemput: ' + name);
+    goTo('home');
+}
+
+function setDest(name, addr, dist, fare) {
+    state.booking.dropoff = name;
+    state.booking.distance = dist;
+    
+    // Calculate fare
+    const baseFare = Math.max(Math.round(dist * 1800), 5000);
+    const terrainFee = dist > 15 ? 4000 : dist > 8 ? 2500 : 1000;
+    const totalFare = baseFare + terrainFee;
+    const commission = Math.round(totalFare * 0.20);
+    const driverEarning = totalFare - commission;
+    
+    state.booking.baseFare = baseFare;
+    state.booking.terrainFee = terrainFee;
+    state.booking.totalFare = totalFare;
+    state.booking.commission = commission;
+    state.booking.driverEarning = driverEarning;
+    state.booking.duration = Math.round(dist * 3);
+    state.booking.terrain = dist > 15 ? 'pegunungan' : dist > 8 ? 'berbukit' : 'datar';
+    
+    // Update UI
+    document.getElementById('dropoffName').textContent = name;
+    document.getElementById('pickupName').textContent = state.booking.pickup;
+    document.getElementById('distance').textContent = dist;
+    document.getElementById('fareDistance').textContent = dist;
+    document.getElementById('duration').textContent = state.booking.duration;
+    document.getElementById('terrain').textContent = state.booking.terrain.charAt(0).toUpperCase() + state.booking.terrain.slice(1);
+    document.getElementById('fareTerrain').textContent = state.booking.terrain;
+    document.getElementById('fareTotal').textContent = fmt(totalFare);
+    document.getElementById('baseFare').textContent = fmt(baseFare);
+    document.getElementById('terrainFee').textContent = fmt(terrainFee);
+    document.getElementById('commission').textContent = fmt(commission);
+    document.getElementById('driverEarning').textContent = fmt(driverEarning);
+    
+    goTo('booking');
+}
+
+function selectService(type) {
+    state.currentService = type;
+    if (type === 'ride') goTo('location');
+    else showToast('🚧 Tumimpu ' + type.toUpperCase() + ' segera hadir di beta!');
+}
+
+function selectServiceChip(el, type) {
+    document.querySelectorAll('.service-chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    showToast('✓ Layanan: ' + el.textContent.trim());
+}
+
+function bookRide() {
+    if (state.wallet < state.booking.totalFare) {
+        showToast('⚠️ Saldo tidak cukup. Top up dulu!');
+        return;
+    }
+    
+    goTo('searching');
+    
+    // Save ride to Firebase
+    if (firebaseReady) {
+        const rideData = {
+            ...state.booking,
+            status: 'searching',
+            passengerId: 'demo_user',
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+        db.collection('rides').add(rideData).then(doc => {
+            state.currentRide = { id: doc.id, ...rideData };
+        }).catch(e => console.log('Save error:', e));
+    }
+    
+    // Simulate finding driver
+    setTimeout(() => {
+        const randomDriver = state.demoDrivers[Math.floor(Math.random() * state.demoDrivers.length)];
+        state.driver = { ...randomDriver };
+        
+        document.getElementById('driverName').textContent = randomDriver.name;
+        document.getElementById('driverInitial').textContent = randomDriver.initial;
+        document.getElementById('driverRating').textContent = randomDriver.rating;
+        document.getElementById('driverTrips').textContent = randomDriver.trips;
+        document.getElementById('driverVehicle').textContent = randomDriver.vehicle + ' · Hitam';
+        document.getElementById('driverArea').textContent = 'Driver Lokal ' + randomDriver.area;
+        
+        goTo('driver');
+        showToast('🎉 Driver ditemukan!');
+    }, 4000);
+}
+
+function cancelSearch() {
+    goTo('home');
+    showToast('❌ Pencarian dibatalkan');
+}
+
+function startRide() {
+    document.getElementById('ongoingDest').textContent = 'Menuju ' + state.booking.dropoff;
+    document.getElementById('ongoingDriver').textContent = state.driver.name;
+    document.getElementById('ongoingVehicle').textContent = state.driver.vehicle;
+    document.getElementById('ongoingFare').textContent = 'Rp ' + fmt(state.booking.totalFare);
+    document.getElementById('ongoingDriverEarn').textContent = fmt(state.booking.driverEarning);
+    document.getElementById('ongoingCommission').textContent = fmt(state.booking.commission);
+    
+    goTo('ongoing');
+    
+    // Simulate progress
+    let progress = 20;
+    const interval = setInterval(() => {
+        progress += 5;
+        document.getElementById('progressBar').style.width = progress + '%';
+        const remaining = Math.max(0, Math.round((100 - progress) / 100 * state.booking.duration));
+        const distRemaining = ((100 - progress) / 100 * state.booking.distance).toFixed(1);
+        document.getElementById('etaRemaining').textContent = remaining + ' menit';
+        document.getElementById('distRemaining').textContent = distRemaining + ' km';
+        
+        if (progress >= 100) {
+            clearInterval(interval);
+            setTimeout(() => completeRide(), 500);
+        }
+    }, 800);
+}
+
+function completeRide() {
+    // Update receipt
+    document.getElementById('receiptBase').textContent = 'Rp ' + fmt(state.booking.baseFare);
+    document.getElementById('receiptTerrain').textContent = 'Rp ' + fmt(state.booking.terrainFee);
+    document.getElementById('receiptCommission').textContent = '- Rp ' + fmt(state.booking.commission);
+    document.getElementById('receiptDriver').textContent = 'Rp ' + fmt(state.booking.driverEarning);
+    document.getElementById('receiptTotal').textContent = 'Rp ' + fmt(state.booking.totalFare);
+    
+    document.getElementById('completeDriverInit').textContent = state.driver.initial;
+    document.getElementById('completeDriverName').textContent = state.driver.name;
+    document.getElementById('completeVehicle').textContent = state.driver.vehicle;
+    
+    // Deduct wallet
+    state.wallet -= state.booking.totalFare;
+    updateWalletUI();
+    
+    // Add to history
+    state.history.unshift({
+        id: 'h' + Date.now(),
+        type: state.currentService,
+        route: state.booking.pickup.split(',')[0] + ' → ' + state.booking.dropoff.split(',')[0],
+        date: 'Baru saja',
+        driver: state.driver.name,
+        fare: state.booking.totalFare,
+        distance: state.booking.distance + ' km'
+    });
+    
+    // Save to Firebase
+    if (firebaseReady && state.currentRide) {
+        db.collection('rides').doc(state.currentRide.id).update({
+            status: 'completed',
+            driverId: state.driver.id,
+            completedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }).catch(e => console.log(e));
+    }
+    
+    goTo('complete');
+}
+
+function setRating(v) {
+    state.rating = v;
+    document.querySelectorAll('.star').forEach(s => {
+        s.classList.toggle('active', parseInt(s.dataset.v) <= v);
+    });
+}
+
+function selectTip(el, amount) {
+    document.querySelectorAll('.tip-chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    state.selectedTip = amount;
+}
+
+function finishRide() {
+    showToast('🙏 Terima kasih! Rating: ' + state.rating + '⭐, Tip: Rp ' + fmt(state.selectedTip));
+    state.rating = 0;
+    state.selectedTip = 5000;
+    document.querySelectorAll('.star').forEach(s => s.classList.remove('active'));
+    goTo('home');
+}
+
+// ============================================
+// HISTORY
+// ============================================
+function renderHistory(filter = 'all') {
+    const list = document.getElementById('historyList');
+    const filtered = filter === 'all' ? state.history : state.history.filter(h => h.type === filter);
+    
+    if (filtered.length === 0) {
+        list.innerHTML = '<div style="text-align:center;padding:40px;color:var(--muted)"><div style="font-size:48px;margin-bottom:12px">📭</div>Belum ada perjalanan</div>';
+        return;
+    }
+    
+    const icons = {ride:'🏍️', send:'📦', food:'🍔', mart:'🛒'};
+    const colors = {ride:'#F0FDFA', send:'#FFFBEB', food:'#FEF2F2', mart:'#F5F3FF'};
+    
+    list.innerHTML = filtered.map(h => `
+        <div class="history-item">
+            <div class="history-icon" style="background:${colors[h.type]||colors.ride}">${icons[h.type]||'🏍️'}</div>
+            <div class="history-info">
+                <div class="history-route">${h.route}</div>
+                <div class="history-meta"><span>${h.date}</span><span>•</span><span>${h.driver}</span></div>
+            </div>
+            <div class="history-price">
+                <div class="p">Rp ${fmt(h.fare)}</div>
+                <div class="d">${h.distance}</div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function filterHistory(el, type) {
+    document.querySelectorAll('.history-tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    renderHistory(type);
+}
+
+// ============================================
+// DRIVER MODE
+// ============================================
+function toggleDriverMode() {
+    state.isDriverMode = !state.isDriverMode;
+    const toggle = document.getElementById('driverToggle');
+    toggle.classList.toggle('active', state.isDriverMode);
+    
+    if (state.isDriverMode) {
+        document.getElementById('driverDashName').textContent = 'Bapak Samin';
+        goTo('driverDashboard');
+        renderOrders();
+        showToast('🏍️ Mode Driver aktif');
+    } else {
+        goTo('home');
+    }
+}
+
+function exitDriverMode() {
+    state.isDriverMode = false;
+    state.isOnline = false;
+    document.getElementById('driverToggle').classList.remove('active');
+    document.getElementById('onlineToggle').classList.remove('active');
+    goTo('home');
+    showToast('👋 Mode Driver nonaktif');
+}
+
+function toggleOnline() {
+    state.isOnline = !state.isOnline;
+    document.getElementById('onlineToggle').classList.toggle('active', state.isOnline);
+    
+    if (state.isOnline) {
+        showToast('✅ Anda ONLINE. Menunggu order...');
+        // Simulate incoming order after 3 seconds
+        setTimeout(() => {
+            if (state.isOnline) addDemoOrder();
+        }, 3000);
+    } else {
+        showToast('⏸️ Anda OFFLINE');
+    }
+}
+
+function addDemoOrder() {
+    const container = document.getElementById('ordersContainer');
+    const orderId = 'o' + Date.now();
+    const pickup = ['Mokubu','Alun-Alun','Terminal','RSUD'][Math.floor(Math.random()*4)];
+    const dropoff = ['Pasar Besar','Lolak','Modayag','Masjid Raya'][Math.floor(Math.random()*4)];
+    const dist = (Math.random() * 10 + 2).toFixed(1);
+    const fare = Math.round(dist * 1800 + 1000);
+    const earning = Math.round(fare * 0.8);
+    
+    const card = document.createElement('div');
+    card.className = 'order-card';
+    card.id = orderId;
+    card.innerHTML = `
+        <div class="order-header">
+            <div class="order-type">🏍️ TUMIMPU RIDE</div>
+            <div class="order-timer" id="timer-${orderId}">30 detik</div>
+        </div>
+        <div class="order-route">
+            <div class="label">Jemput</div>
+            <div class="value">📍 ${pickup}</div>
+            <div class="label">Tujuan</div>
+            <div class="value">🏁 ${dropoff}</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:4px">📏 ${dist} km • ⏱️ ${Math.round(dist*3)} menit</div>
+        </div>
+        <div class="order-fare">
+            <div>
+                <div class="label">💰 Pendapatan Anda</div>
+                <div class="value">Rp ${fmt(earning)}</div>
+            </div>
+            <div style="text-align:right">
+                <div class="label">Komisi</div>
+                <div style="font-size:12px;color:var(--muted);font-weight:600">20%</div>
+            </div>
+        </div>
+        <div class="order-actions">
+            <button class="action-btn" onclick="rejectOrder('${orderId}')">✕ Tolak</button>
+            <button class="action-btn primary" onclick="acceptOrder('${orderId}',${earning})">✓ Terima</button>
+        </div>
+    `;
+    container.prepend(card);
+    
+    // Countdown timer
+    let seconds = 30;
+    const timer = setInterval(() => {
+        seconds--;
+        const el = document.getElementById('timer-' + orderId);
+        if (el) el.textContent = seconds + ' detik';
+        if (seconds <= 0) {
+            clearInterval(timer);
+            rejectOrder(orderId);
+        }
+    }, 1000);
+    
+    showToast('🔔 Order baru masuk!');
+}
+
+function acceptOrder(id, earning) {
+    const card = document.getElementById(id);
+    if (card) card.remove();
+    
+    document.getElementById('todayTrips').textContent = parseInt(document.getElementById('todayTrips').textContent) + 1;
+    const currentEarn = parseInt(document.getElementById('todayEarn').textContent.replace(/[^0-9]/g,'')) || 0;
+    document.getElementById('todayEarn').textContent = 'Rp ' + fmt(currentEarn + earning);
+    
+    showToast('✅ Order diterima! Menuju lokasi jemput...');
+}
+
+function rejectOrder(id) {
+    const card = document.getElementById(id);
+    if (card) card.remove();
+    showToast('❌ Order ditolak');
+}
+
+function renderOrders() {
+    const container = document.getElementById('ordersContainer');
+    if (!state.isOnline) {
+        container.innerHTML = '<div class="no-orders"><div class="no-orders-icon">⏸️</div><div>Anda sedang OFFLINE</div><div style="font-size:12px;margin-top:8px">Aktifkan status online untuk menerima order</div></div>';
+    } else {
+        container.innerHTML = '<div class="no-orders"><div class="no-orders-icon">🔍</div><div>Menunggu order masuk...</div></div>';
+    }
+}
+
+// ============================================
+// WALLET & MODALS
+// ============================================
+function showTopup() {
+    document.getElementById('topupModal').classList.add('show');
+}
+
+function showPaymentModal() {
+    document.getElementById('paymentModal').classList.add('show');
+}
+
+function closeModal(id) {
+    document.getElementById(id).classList.remove('show');
+}
+
+function doTopup() {
+    const amount = parseInt(document.getElementById('topupAmount').value);
+    if (!amount || amount < 10000) {
+        showToast('⚠️ Minimum top up Rp 10.000');
+        return;
+    }
+    state.wallet += amount;
+    updateWalletUI();
+    closeModal('topupModal');
+    showToast('✅ Top up Rp ' + fmt(amount) + ' berhasil!');
+}
+
+function updateWalletUI() {
+    document.getElementById('walletBalance').textContent = 'Rp ' + fmt(state.wallet);
+    document.getElementById('statWallet').textContent = 'Rp ' + Math.round(state.wallet/1000) + 'K';
+}
+
+// ============================================
+// LANGUAGE
+// ============================================
+const translations = {
+    id: {
+        hi: 'Tabea, selamat pagi 👋',
+        wallet: 'Saldo Tumimpu',
+        whereTo: 'Mau ke mana hari ini?',
+        searchPlaceholder: 'Cari tujuan Anda...',
+        searchSub: 'Pilih dari lokasi favorit di Kotamobagu',
+        services: 'Layanan Kami',
+        driverMode: 'Mode Driver',
+        promoTitle: 'Diskon 50% Naik Tumimpu!',
+        promoDesc: 'Khusus warga Kotamobagu & Bolmong Raya. Berlaku s/d 30 November.',
+        fairTitle: 'Komisi Transparan Maksimal 20%',
+        fairDesc: 'Sesuai regulasi. Anda lihat langsung berapa yang diterima mitra driver.'
+    },
+    mongondow: {
+        hi: 'Tabea, mongondow suilala 👋',
+        wallet: 'Saldo Tumimpu',
+        whereTo: 'Mao kemana binte ya?',
+        searchPlaceholder: 'Tondokan tujuanmu...',
+        searchSub: 'Piliya lokasi favorit to Kotamobagu',
+        services: 'Layanan ami',
+        driverMode: 'Mode Driver',
+        promoTitle: 'Potongan 50% Naik Tumimpu!',
+        promoDesc: 'Khusus warganga Kotamobagu & Bolmong Raya.',
+        fairTitle: 'Komisi Transparan Maksimal 20%',
+        fairDesc: 'Sesuai regulasi. Ikong tonjuk pira na diterimanga driver.'
+    }
+};
+
+function setLang(lang) {
+    state.lang = lang;
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.dataset.i18n;
+        if (translations[lang][key]) el.textContent = translations[lang][key];
+    });
+    
+    showToast(lang === 'mongondow' ? '🌐 Bahasa Mongondow aktif' : '🌐 Bahasa Indonesia aktif');
+}
+
+// ============================================
+// UTILITIES
+// ============================================
+function fmt(n) {
+    return n.toLocaleString('id-ID');
+}
+
+let toastTimer;
+function showToast(msg) {
+    const toast = document.getElementById('toast');
+    const icon = msg.match(/^[^\w\s]/)?.[0] || '✓';
+    document.getElementById('toastIcon').textContent = icon;
+    document.getElementById('toastMsg').textContent = msg.replace(/^[^\w\s]\s*/, '');
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+// Close modal on overlay click
+document.querySelectorAll('.modal-overlay').forEach(m => {
+    m.addEventListener('click', e => {
+        if (e.target === m) m.classList.remove('show');
+    });
+});
+
+// ============================================
+// SERVICE WORKER (PWA)
+// ============================================
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').catch(e => console.log('SW error:', e));
+}
+
+console.log('🏍️ Tumimpu PWA loaded');
+console.log('📱 Mode:', firebaseReady ? 'LIVE (Firebase)' : 'DEMO');
+</script>
+
+</body>
+</html>
